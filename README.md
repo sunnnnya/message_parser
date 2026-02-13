@@ -1,91 +1,94 @@
-# Message Parser
+# 消息解析器
 
-A React + TypeScript application that parses chat message arrays (HumanMessage, AIMessage, ToolMessage) and displays them in categorized cards with a professional UI.
+chystart, 2441664255@qq.com
 
-## Features
+一个基于 React + TypeScript 的消息解析应用，能够解析聊天消息数组（HumanMessage、AIMessage、ToolMessage）并以专业UI分类展示。
 
-- **Interactive Input**: Users can input JSON or Python-formatted message arrays for real-time parsing (e.g., `[HumanMessage(content='...'), AIMessage(...)]`)
-- **Message Parsing**: Identifies HumanMessage, AIMessage, and ToolMessage types from raw data
-- **Visual Cards**: Displays each message in a color-coded card with intuitive icons
-- **Detailed View**: Expandable sections show additional metadata, tool calls, and response data
-- **Responsive Layout**: Clean, professional design with Material-UI components
-- **Real-time Feedback**: Shows parsing errors and message statistics
-- **Sample Data**: Includes example messages demonstrating all three message types
+## 功能特性
 
-## Project Structure
+- **交互式输入**：用户可以输入JSON或Python格式的消息数组进行实时解析（例如：`[HumanMessage(content='...'), AIMessage(...)]`）
+- **消息解析**：从原始数据中识别 HumanMessage、AIMessage 和 ToolMessage 类型
+- **可视化卡片**：将每条消息显示在带有直观图标的颜色编码卡片中
+- **详细视图**：可展开的部分显示额外的元数据、工具调用和响应数据
+- **响应式布局**：使用Material-UI组件构建的简洁专业设计
+- **实时反馈**：显示解析错误和消息统计信息
+- **示例数据**：包含展示所有三种消息类型的示例消息
+
+## 项目结构
 
 ```
 src/
 ├── components/
-│   ├── MessageCard.tsx    # Individual message card component
-│   └── MessageParser.tsx  # Message summary and parsing component
+│   └── MessageParser.tsx  # 消息解析和展示组件（包含卡片功能）
 ├── types/
-│   └── message.ts         # TypeScript interfaces and parsing functions
+│   └── message.ts         # TypeScript 接口和解析函数
 ├── data/
-│   └── sampleMessages.ts  # Sample message data
-├── App.tsx                # Main application component
-└── main.tsx              # Application entry point with theme
+│   └── sampleMessages.ts  # 示例消息数据
+├── App.tsx                # 主应用组件
+├── main.tsx              # 应用入口点，包含主题配置
+└── twind.config.ts       # TwindCSS 配置文件
 ```
 
-## Message Types
+## 支持的消息类型
 
-The parser supports three message types:
+解析器支持三种消息类型：
 
-1. **HumanMessage**: User messages with content and metadata
-2. **AIMessage**: AI responses with optional tool calls and refusal
-3. **ToolMessage**: Tool execution results with tool call references
+1. **HumanMessage**：用户消息，包含内容和元数据
+2. **AIMessage**：AI响应消息，可包含工具调用和拒绝信息
+3. **ToolMessage**：工具执行结果消息，包含工具调用引用
 
-## Usage
+## 使用方法
 
-1. **Install dependencies**:
+1. **安装依赖**：
    ```bash
    npm install
    ```
 
-2. **Run development server**:
+2. **启动开发服务器**：
    ```bash
    npm run dev
    ```
 
-3. **Open browser**: Navigate to `http://localhost:5173` (or the port shown in terminal)
+3. **打开浏览器**：访问 `http://localhost:5173`（或终端显示的端口）
 
-4. **Input message data**:
-   - In the left panel, input JSON or Python-formatted message arrays
-   - JSON format: `[{"content": "message text", ...}, ...]`
-   - Python format: `[HumanMessage(content='...'), AIMessage(...), ToolMessage(...)]`
-   - Use the sample data as a reference (pre-loaded Python format)
+4. **输入消息数据**：
+   - 在左侧面板中，输入JSON或Python格式的消息数组
+   - JSON格式：`[{"content": "消息文本", ...}, ...]`
+   - Python格式：`[HumanMessage(content='...'), AIMessage(...), ToolMessage(...)]`
+   - 可以使用预加载的Python格式示例数据作为参考
 
-5. **Parse messages**: Click the "解析消息" (Parse Messages) button to parse the input
+5. **解析消息**：点击"🔍 解析消息"按钮解析输入内容
 
-6. **View results**: The right panel shows parsed message summary and detailed cards below
+6. **查看结果**：右侧面板显示解析后的消息摘要和详细卡片
 
-7. **Reset**: Use the "重置示例" (Reset Example) button to restore sample data
+7. **重置**：使用"🔄 重置示例"按钮恢复示例数据
 
-## Customization
+## 自定义配置
 
-- **Input format**: The parser accepts both JSON arrays and Python-style message lists (e.g., `[HumanMessage(...), AIMessage(...)]`) with fields like `content`, `tool_calls`, `tool_call_id`, and other metadata
-- **Theme customization**: Edit the theme in `src/main.tsx` to change colors and typography
-- **Card styling**: Adjust styles in `MessageCard.tsx` for different visual appearance
-- **Parsing logic**: Modify `src/types/message.ts` to change how messages are classified
+- **输入格式**：解析器接受JSON数组和Python风格的消息列表（例如：`[HumanMessage(...), AIMessage(...)]`），支持字段包括 `content`、`tool_calls`、`tool_call_id` 和其他元数据
+- **主题定制**：编辑 `src/main.tsx` 中的主题以更改颜色和排版
+- **卡片样式**：在 `MessageParser.tsx` 中调整样式以获得不同的视觉外观
+- **解析逻辑**：修改 `src/types/message.ts` 以更改消息分类方式
 
-## Technologies Used
+## 技术栈
 
 - React 18
 - TypeScript
 - Material-UI (MUI) v7
-- Vite for build tooling
-- Emotion for styling
+- Vite 构建工具
+- Emotion 样式库
+- TwindCSS (替代原始Material-UI字体)
 
-## Sample Data
+## 示例数据
 
-The application includes three sample messages that are pre-loaded in the input field:
+应用包含三条预加载到输入字段的示例消息：
 
-1. A HumanMessage asking about Beijing weather
-2. An AIMessage with a tool call to query weather
-3. A ToolMessage with weather results
+1. 一个询问北京天气的 HumanMessage
+2. 一个包含查询天气工具调用的 AIMessage
+3. 一个包含天气结果的 ToolMessage
 
-Each message demonstrates different metadata fields and parsing capabilities. Users can modify this data directly in the input field or replace it with their own message arrays.
+每条消息展示了不同的元数据字段和解析能力。用户可以直接在输入字段中修改这些数据，或用他们自己的消息数组替换。
 
-## License
+## 许可证
 
 MIT

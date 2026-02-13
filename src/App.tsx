@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Container, Typography, Box, Paper, Divider, Alert, TextField, Button, Snackbar } from '@mui/material'
 import MessageParser from './components/MessageParser'
-import MessageCard from './components/MessageCard'
 import { Message, parseMessageArray, parsePythonMessageArray } from './types/message'
 import { pythonSampleData } from './data/sampleMessages'
 
@@ -16,6 +14,7 @@ function App() {
     }
   })
   const [error, setError] = useState<string>('')
+  const [showError, setShowError] = useState<boolean>(false)
 
   // 调试：在控制台打印解析结果
   useEffect(() => {
@@ -40,14 +39,17 @@ function App() {
         const parsedMessages = parseMessageArray(parsedData)
         setMessages(parsedMessages)
         setError('')
+        setShowError(false)
       } catch (jsonError) {
         // 如果JSON解析失败，尝试Python格式
         const parsedMessages = parsePythonMessageArray(inputText)
         setMessages(parsedMessages)
         setError('')
+        setShowError(false)
       }
     } catch (err) {
       setError(`解析错误: ${err instanceof Error ? err.message : '无效的输入格式'}`)
+      setShowError(true)
     }
   }
 
@@ -55,95 +57,111 @@ function App() {
     setInputText(pythonSampleData)
     setMessages(parsePythonMessageArray(pythonSampleData))
     setError('')
+    setShowError(false)
   }
 
   const handleCloseError = () => {
-    setError('')
+    setShowError(false)
   }
 
+  // 自动隐藏错误通知
+  useEffect(() => {
+    if (showError) {
+      const timer = setTimeout(() => {
+        setShowError(false)
+      }, 6000)
+      return () => clearTimeout(timer)
+    }
+  }, [showError])
+
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h3" component="h1" gutterBottom color="primary">
-          消息解析工具
-        </Typography>
-        <Typography variant="body1" color="text.secondary" paragraph>
-          此工具解析聊天消息数组并将其显示为分类卡片。能够识别HumanMessage、AIMessage和ToolMessage类型，并提供详细信息展示。
-        </Typography>
-        <Alert severity="info" sx={{ mb: 2 }}>
-          输入JSON格式的消息数组进行解析。当前解析了 {messages.length} 条消息: {messages.filter(m => m.type === 'human').length} 条HumanMessage, {messages.filter(m => m.type === 'ai').length} 条AIMessage, {messages.filter(m => m.type === 'tool').length} 条ToolMessage.
-        </Alert>
-      </Box>
+    <div className="h-screen bg-gray-50 overflow-hidden">
+      <div className="max-w-7xl mx-auto h-full py-8 px-4 sm:px-6 lg:px-8">
 
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-        <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 50%' }, minWidth: { xs: '100%', md: '50%' } }}>
-          <Paper elevation={2} sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <Typography variant="h5" component="h2" gutterBottom color="primary">
-              输入消息数据
-            </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
-              在此输入JSON或Python格式的消息数组进行解析。支持HumanMessage(content='...')、AIMessage(...)、ToolMessage(...)等格式。
-            </Typography>
-            <Divider sx={{ my: 2 }} />
-            <TextField
-              multiline
-              fullWidth
-              minRows={10}
-              maxRows={20}
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              placeholder='例如: [HumanMessage(content="Hello", ...), AIMessage(...), ...] 或 JSON格式'
-              sx={{ mb: 2 }}
-            />
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <Button variant="contained" color="primary" onClick={handleParse} fullWidth>
-                解析消息
-              </Button>
-              <Button variant="outlined" color="secondary" onClick={handleReset} fullWidth>
-                重置示例
-              </Button>
-            </Box>
-          </Paper>
-        </Box>
-        <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 50%' }, minWidth: { xs: '100%', md: '50%' } }}>
-          <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
-            <Typography variant="h5" component="h2" gutterBottom color="primary">
-              解析结果
-            </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
-              以下是解析后的消息分类摘要。
-            </Typography>
-            <Divider sx={{ my: 2 }} />
-            <MessageParser messages={messages} />
-          </Paper>
-        </Box>
-      </Box>
 
-      <Box sx={{ mt: 4 }}>
-        <Paper elevation={2} sx={{ p: 3 }}>
-          <Typography variant="h5" component="h2" gutterBottom color="primary">
-            消息详情
-          </Typography>
-          <Typography variant="body2" color="text.secondary" paragraph>
-            每条消息卡片显示类型、内容、元数据和其他相关信息。
-          </Typography>
-          <Divider sx={{ my: 2 }} />
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            {messages.map((message, index) => (
-              <Box key={message.id || index}>
-                <MessageCard message={message} index={index} />
-              </Box>
-            ))}
-          </Box>
-        </Paper>
-      </Box>
-      <Snackbar
-        open={!!error}
-        autoHideDuration={6000}
-        onClose={handleCloseError}
-        message={error}
-      />
-    </Container>
+        {/* Main Content - Two Columns */}
+        <div className="flex flex-col lg:flex-row gap-6 h-full">
+          {/* Left Column - Input */}
+          <div className="lg:w-1/2">
+            <div className="bg-white rounded-lg shadow-md p-6 h-full flex flex-col">
+              <h2 className="text-xl font-semibold text-blue-800 mb-3 flex items-center">
+                <span className="mr-2">📝</span>
+                输入消息数据
+              </h2>
+              <p className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent font-serif font-semibold text-base mb-4 drop-shadow-lg hover:drop-shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+                请输入 LangChain 中消息列表原始字符串进行格式化解析，例如: [HumanMessage(), AIMessage(), ToolMessage(), AIMessage()...]
+              </p>
+
+              <hr className="my-4 border-gray-200" />
+
+              <textarea
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 flex-grow min-h-[200px] font-mono text-sm resize-none"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder='例如: [HumanMessage(content="Hello"), AIMessage(content="Hi"), ToolMessage(content="Result"), ...]'
+              />
+
+              <div className="flex gap-3 mt-4">
+                <button
+                  onClick={handleParse}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  🔍 解析消息
+                </button>
+                <button
+                  onClick={handleReset}
+                  className="flex-1 bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 px-4 rounded-lg border border-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                >
+                  🔄 重置示例
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Parsed Results */}
+          <div className="lg:w-1/2">
+            <div className="bg-white rounded-lg shadow-md p-6 h-full overflow-y-auto">
+              <h2 className="text-xl font-semibold text-green-800 mb-3 flex items-center">
+                <span className="mr-2">📊</span>
+                解析结果
+              </h2>
+              <MessageParser messages={messages} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Error Notification */}
+      {showError && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-lg max-w-sm">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-red-800">{error}</p>
+              </div>
+              <div className="ml-auto pl-3">
+                <div className="-mx-1.5 -my-1.5">
+                  <button
+                    onClick={handleCloseError}
+                    className="inline-flex rounded-md p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600"
+                  >
+                    <span className="sr-only">关闭</span>
+                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
 
